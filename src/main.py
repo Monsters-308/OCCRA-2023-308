@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------- #
 #                                                                              #
 # 	Module:       main.py                                                      #
-# 	Author:       Noah Nicolas Gabe Jerry                                      #
+# 	Author:       Noah Nicolas Gabe Jerry Sofie                                #
 # 	Created:      9/13/2023, 1:06:06 PM                                        #
 # 	Description:  V5 project                                                   #
 #                                                                              #
@@ -41,44 +41,34 @@ FORWARD_SPEED_MULTIPLIER = 1
 STRAFE_SPEED_MULTIPLIER = 1
 ROTATION_SPEED_MULTIPLIER = 1
 
-# Code ran once on startup
-def robotInit():
-    pass 
-
+# Finds the distance of a point from (0, 0)
 def hypot(x: float, y: float) -> float:
     return math.sqrt(x**2+y**2)
 
 # Main programming loop
 def main():
-    x = controller_1.axis3.position() * FORWARD_SPEED_MULTIPLIER
-    y = controller_1.axis4.position() * STRAFE_SPEED_MULTIPLIER
+    y = controller_1.axis3.position() * FORWARD_SPEED_MULTIPLIER
+    x = controller_1.axis4.position() * STRAFE_SPEED_MULTIPLIER
     turn = controller_1.axis1.position() * ROTATION_SPEED_MULTIPLIER
     
+    # deadband for joystick drift
     if abs(x) < 5:
        x = 0
     if abs(y) < 5:
        y = 0
     if abs(turn) < 5:
        turn = 0
-
     
+    # turn cartesian values into polar values
     theta = math.atan2(y,x)
     power = hypot(x,y)
-        
-    brain.screen.clear_screen()
-    brain.screen.set_cursor(1,1)
     
-
-
-    #deadband for joystick drift
-    
-
     # move drive wheels
-    drive(power, turn, theta+math.pi/2)
+    drive(power, turn, theta)
 
 
-# Moves the chassis wheels. forwardSpeed represents how fast forward, turningSpeed represents how fast you're turning (positive is right). 
-# Both are values from -100 to 100.
+# Moves the chassis wheels. Powers is how fast to move, theta is what angle to move in, and turn is how much to turn
+# Motor values range from -100 to 100.
 def drive(power: float, turn: float, theta: float):
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
@@ -99,13 +89,6 @@ def drive(power: float, turn: float, theta: float):
         rightFront *= 100
         leftRear *= 100
         rightRear *= 100
-    
-
-
-
-
-    
-
 
     # drive left side
     frontLeftMotor.spin(FORWARD, leftFront)
@@ -115,6 +98,7 @@ def drive(power: float, turn: float, theta: float):
     frontRightMotor.spin(FORWARD, rightFront)
     backRightMotor.spin(FORWARD, rightRear)
 
+    # Print motor vaules out for debugging
     # brain.screen.clear_screen()
     # brain.screen.set_cursor(1,1)
     # brain.screen.print("LF: ", leftFront)
@@ -144,8 +128,6 @@ def shoot():
 
 
 # ---- START ACTUALLY EXECUTING CODE ---- 
-
-robotInit()
 
 while 1:
     main()
