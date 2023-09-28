@@ -50,10 +50,14 @@ def hypot(x: float, y: float) -> float:
 
 # Main programming loop
 def main():
-    x = controller_1.axis3.position() * FORWARD_SPEED_MULTIPLIER
-    y = controller_1.axis4.position() * STRAFE_SPEED_MULTIPLIER
+    # left joystick y axis (3)
+    y = controller_1.axis3.position() * FORWARD_SPEED_MULTIPLIER
+    # left joystick x axis (4)
+    x = controller_1.axis4.position() * STRAFE_SPEED_MULTIPLIER
+    # right joystick x axis (1)
     turn = controller_1.axis1.position() * ROTATION_SPEED_MULTIPLIER
     
+    # ensure robot does not move with small movements of the joysticks when idling
     if abs(x) < 5:
        x = 0
     if abs(y) < 5:
@@ -74,7 +78,7 @@ def main():
     
 
     # move drive wheels
-    drive(power, turn, theta+math.pi/2)
+    drive(power, turn, theta)
 
 
 # Moves the chassis wheels. forwardSpeed represents how fast forward, turningSpeed represents how fast you're turning (positive is right). 
@@ -115,16 +119,16 @@ def drive(power: float, turn: float, theta: float):
     frontRightMotor.spin(FORWARD, rightFront)
     backRightMotor.spin(FORWARD, rightRear)
 
-    # brain.screen.clear_screen()
-    # brain.screen.set_cursor(1,1)
-    # brain.screen.print("LF: ", leftFront)
-    # brain.screen.new_line()
-    # brain.screen.print("LR: ", leftRear)
-    # brain.screen.new_line()
-    # brain.screen.print("RF: ", rightFront)
-    # brain.screen.new_line()
-    # brain.screen.print("RR: ", rightRear)
-    # brain.screen.new_line()
+    brain.screen.clear_screen()
+    brain.screen.set_cursor(1,1)
+    brain.screen.print("LF: ", leftFront)
+    brain.screen.new_line()
+    brain.screen.print("LR: ", leftRear)
+    brain.screen.new_line()
+    brain.screen.print("RF: ", rightFront)
+    brain.screen.new_line()
+    brain.screen.print("RR: ", rightRear)
+    brain.screen.new_line()
     # brain.screen.print("Theta ", theta*57.29)
     # brain.screen.new_line()
     # brain.screen.print("Power ", power)
