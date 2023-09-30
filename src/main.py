@@ -9,13 +9,9 @@
 # ---------------------------------------------------------------------------- #
 
 
-
-
 # Library imports----
 from vex import *
 import math
-
-
 
 
 # Top of Vexcode Configures Devices KEY------------
@@ -31,16 +27,17 @@ import math
 brain=Brain()
 
 frontLeftMotor = Motor29(brain.three_wire_port.a, False)
-frontRightMotor = Motor29(brain.three_wire_port.b, False)
-backLeftMotor = Motor29(brain.three_wire_port.d, True)
-backRightMotor = Motor29(brain.three_wire_port.e, True)
-flywheelMotor = Motor29(brain.three_wire_port.f, False)
+frontRightMotor = Motor29(brain.three_wire_port.b, True)
+backLeftMotor = Motor29(brain.three_wire_port.d, False)
+backRightMotor = Motor29(brain.three_wire_port.c, True)
+#flywheelMotor = Motor29(brain.three_wire_port.f, False)
 controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
+
 # Constants
 FORWARD_SPEED_MULTIPLIER = 1
 STRAFE_SPEED_MULTIPLIER = 1
-ROTATION_SPEED_MULTIPLIER = 1
+ROTATION_SPEED_MULTIPLIER = 0.5
 
 
 #================================================================= wait for stuff to configure =================================================================#
@@ -64,13 +61,10 @@ def main():
        y = 0
     if abs(turn) < 5:
        turn = 0
-   
-    theta = math.atan2(y,x) 
-    #Use pythagorean theorem for power
-    power = math.sqrt(float(x**2)+float(y**2))
-        
-    brain.screen.clear_screen()
-    brain.screen.set_cursor(1,1)
+    
+    # Convert cartesian values (x and y) into polar values (angle and magnitude)
+    theta = math.atan2(y, x) 
+    power = math.sqrt(float(x**2) + float(y**2))
 
 
     # move drive wheels
@@ -129,16 +123,23 @@ def drive(power: float, turn: float, theta: float):
     # brain.screen.print("Turn ", turn)
 
 
-
-
-#Shooting & Intake Mechanism----------------------------------------------------
+# Intake Mechanism----------------------------------------------------
 def intake(): 
     # only want to intake if button "a" is being pressed 
     if controller_1.buttonA.pressing():     
-        flywheelMotor.spin(FORWARD, 50)
+        #flywheelMotor.spin(FORWARD, 50)
+        pass
     else:
-        flywheelMotor.stop()
+        #flywheelMotor.stop()
+        pass
 
+
+# Conveyor Mechanism----------------------------------------------------
+def conveyor():
+    pass
+
+
+# Shooting Mechanism----------------------------------------------------
 def shoot():
     pass
     
