@@ -1,30 +1,35 @@
 
-# Documentation link: https://www.robotmesh.com/studio/content/docs/vexv5-python/html/annotated.html
+# Documentation/Vex Code link: https://www.robotmesh.com/studio/content/docs/vexv5-python/html/annotated.html
 
 # ---------------------------------------------------------------------------- #
-#                                                                              #
 # 	Module:       main.py                                                      #
 # 	Author:       Noah Nicolas Gabe Jerry                                      #
 # 	Created:      9/13/2023, 1:06:06 PM                                        #
-# 	Description:  V5 project                                                   #
-#                                                                              #
+# 	Description:  V5 project                                                   #                                                         
 # ---------------------------------------------------------------------------- #
 
-# Library imports
+
+
+
+# Library imports----
 from vex import *
 import math
 
-# Brain should be defined by default
-brain=Brain()
 
-# ---- START VEXCODE CONFIGURED DEVICES ----
+
+
+# Top of Vexcode Configures Devices KEY------------
 # frontLeftMotor      motor29       A
 # frontRightMotor     motor29       B
 # backLeftMotor       motor29       D
 # backRightMotor      motor29       E
-# ---- END VEXCODE CONFIGURED DEVICES ----
+# Bottom of Vexcode Configures Devices KEY---------
 
-# Configure devices
+
+# CONFIGURE DEVICES-------------------------------------------
+# Brain should be defined by default
+brain=Brain()
+
 frontLeftMotor = Motor29(brain.three_wire_port.a, False)
 frontRightMotor = Motor29(brain.three_wire_port.b, False)
 backLeftMotor = Motor29(brain.three_wire_port.d, True)
@@ -32,23 +37,18 @@ backRightMotor = Motor29(brain.three_wire_port.e, True)
 flywheelMotor = Motor29(brain.three_wire_port.f, False)
 controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
-
-# wait for stuff to configure
-wait(25, MSEC)
-
 # Constants
 FORWARD_SPEED_MULTIPLIER = 1
 STRAFE_SPEED_MULTIPLIER = 1
 ROTATION_SPEED_MULTIPLIER = 1
 
-# Code ran once on startup
-def robotInit():
-    pass 
 
-def hypot(x: float, y: float) -> float:
-    return math.sqrt(x**2+y**2)
+#================================================================= wait for stuff to configure =================================================================#
+wait(25, MSEC)
+#================================================================= wait for stuff to configure =================================================================#
 
-# Main programming loop
+
+# Main programming loop---------------------------------------------------------------------------
 def main():
     # left joystick y axis (3)
     y = controller_1.axis3.position() * FORWARD_SPEED_MULTIPLIER
@@ -57,7 +57,8 @@ def main():
     # right joystick x axis (1)
     turn = controller_1.axis1.position() * ROTATION_SPEED_MULTIPLIER
     
-    # ensure robot does not move with small movements of the joysticks when idling
+
+    # deadband for joystick drift
     if abs(x) < 5:
        x = 0
     if abs(y) < 5:
@@ -66,23 +67,22 @@ def main():
        turn = 0
 
     
-    theta = math.atan2(y,x)
-    power = hypot(x,y)
+    theta = math.atan2(y,x) 
+    #Use pythagorean theorem for power
+    power = math.sqrt(float(x**2)+float(y**2))
         
     brain.screen.clear_screen()
     brain.screen.set_cursor(1,1)
-    
 
-
-    #deadband for joystick drift
-    
 
     # move drive wheels
     drive(power, turn, theta)
 
 
-# Moves the chassis wheels. forwardSpeed represents how fast forward, turningSpeed represents how fast you're turning (positive is right). 
-# Both are values from -100 to 100.
+
+# Controls Robot drive-------------------------------------------------------------------------------------------
+# Forward & Turn control speed of chassiss wheels
+# Values Span -100 to 100. 
 def drive(power: float, turn: float, theta: float):
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
@@ -103,12 +103,6 @@ def drive(power: float, turn: float, theta: float):
         rightFront *= 100
         leftRear *= 100
         rightRear *= 100
-    
-
-
-
-
-    
 
 
     # drive left side
@@ -119,6 +113,7 @@ def drive(power: float, turn: float, theta: float):
     frontRightMotor.spin(FORWARD, rightFront)
     backRightMotor.spin(FORWARD, rightRear)
 
+    #Controls Brain screen
     brain.screen.clear_screen()
     brain.screen.set_cursor(1,1)
     brain.screen.print("LF: ", leftFront)
@@ -136,20 +131,23 @@ def drive(power: float, turn: float, theta: float):
     # brain.screen.print("Turn ", turn)
 
 
-def intake(): 
-    pass 
 
-def shoot():
+
+#Shooting & Intake Mechanism----------------------------------------------------
+def intake(): 
     # only want to intake if button "a" is being pressed 
     if controller_1.buttonA.pressing():     
         flywheelMotor.spin(FORWARD, 50)
     else:
         flywheelMotor.stop()
 
+def shoot():
+    pass
+    
+
+
 
 # ---- START ACTUALLY EXECUTING CODE ---- 
-
-robotInit()
 
 while 1:
     main()
