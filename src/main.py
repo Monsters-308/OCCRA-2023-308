@@ -3,7 +3,7 @@
 
 # ---------------------------------------------------------------------------- #
 # 	Module:       main.py                                                      #
-# 	Author:       Noah Nicolas Gabe Jerry                                      #
+# 	Author:       Noah Nicolas Gabe Jerry Sofie                                #
 # 	Created:      9/13/2023, 1:06:06 PM                                        #
 # 	Description:  V5 project                                                   #                                                         
 # ---------------------------------------------------------------------------- #
@@ -57,7 +57,6 @@ def main():
     # right joystick x axis (1)
     turn = controller_1.axis1.position() * ROTATION_SPEED_MULTIPLIER
     
-
     # deadband for joystick drift
     if abs(x) < 5:
        x = 0
@@ -65,8 +64,7 @@ def main():
        y = 0
     if abs(turn) < 5:
        turn = 0
-
-    
+   
     theta = math.atan2(y,x) 
     #Use pythagorean theorem for power
     power = math.sqrt(float(x**2)+float(y**2))
@@ -104,7 +102,6 @@ def drive(power: float, turn: float, theta: float):
         leftRear *= 100
         rightRear *= 100
 
-
     # drive left side
     frontLeftMotor.spin(FORWARD, leftFront)
     backLeftMotor.spin(FORWARD, leftRear)
@@ -113,17 +110,18 @@ def drive(power: float, turn: float, theta: float):
     frontRightMotor.spin(FORWARD, rightFront)
     backRightMotor.spin(FORWARD, rightRear)
 
-    #Controls Brain screen
-    brain.screen.clear_screen()
-    brain.screen.set_cursor(1,1)
-    brain.screen.print("LF: ", leftFront)
-    brain.screen.new_line()
-    brain.screen.print("LR: ", leftRear)
-    brain.screen.new_line()
-    brain.screen.print("RF: ", rightFront)
-    brain.screen.new_line()
-    brain.screen.print("RR: ", rightRear)
-    brain.screen.new_line()
+
+    # Print motor vaules out for debugging
+    # brain.screen.clear_screen()
+    # brain.screen.set_cursor(1,1)
+    # brain.screen.print("LF: ", leftFront)
+    # brain.screen.new_line()
+    # brain.screen.print("LR: ", leftRear)
+    # brain.screen.new_line()
+    # brain.screen.print("RF: ", rightFront)
+    # brain.screen.new_line()
+    # brain.screen.print("RR: ", rightRear)
+    # brain.screen.new_line()
     # brain.screen.print("Theta ", theta*57.29)
     # brain.screen.new_line()
     # brain.screen.print("Power ", power)
@@ -146,8 +144,8 @@ def shoot():
     
 
 
-
 # ---- START ACTUALLY EXECUTING CODE ---- 
+
 
 while 1:
     main()
