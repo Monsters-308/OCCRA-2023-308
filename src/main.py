@@ -38,6 +38,7 @@ controller_2 = Controller(PARTNER)
 FORWARD_SPEED_MULTIPLIER = 1
 STRAFE_SPEED_MULTIPLIER = 1
 ROTATION_SPEED_MULTIPLIER = 0.5
+CRABCRAWLALIGN = .1
 
 
 #================================================================= wait for stuff to configure =================================================================#
@@ -68,14 +69,15 @@ def main():
 
 
     # move drive wheels
-    drive(power, turn, theta)
+    drive(power, turn, theta, x, CRABCRAWLALIGN)
+    directMovement()
 
 
 
 # Controls Robot drive-------------------------------------------------------------------------------------------
 # Forward & Turn control speed of chassiss wheels
 # Values Span -100 to 100. 
-def drive(power: float, turn: float, theta: float):
+def drive(power: float, turn: float, theta: float, x: float, crabCrawlAlign: float):
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
     maxValue = max(abs(sin), abs(cos))
@@ -97,6 +99,10 @@ def drive(power: float, turn: float, theta: float):
         rightRear *= 100
 
     # drive left side
+    if x > 0 or x < 0:
+        rightFront = x * crabCrawlAlign
+        leftFront = x * crabCrawlAlign
+
     frontLeftMotor.spin(FORWARD, leftFront)
     backLeftMotor.spin(FORWARD, leftRear)
 
@@ -143,7 +149,37 @@ def conveyor():
 def shoot():
     pass
     
+def directMovement():
+    if controller_1.buttonUp.pressing():     
+        frontLeftMotor.spin(FORWARD, 50)
+        backLeftMotor.spin(FORWARD, 50)
 
+        frontRightMotor.spin(FORWARD, 50)
+        backRightMotor.spin(FORWARD, 50)
+    elif controller_1.buttonRight.pressing():
+        frontLeftMotor.spin(FORWARD, 50)
+        backLeftMotor.spin(FORWARD, -50)
+        
+        frontRightMotor.spin(FORWARD, -50 * 1) #1 is the offset to get perfectly moving wheels
+        backRightMotor.spin(FORWARD, 50 * 1)
+    elif controller_1.buttonDown.pressing():
+        frontLeftMotor.spin(FORWARD, -50)
+        backLeftMotor.spin(FORWARD, -50)
+        
+        frontRightMotor.spin(FORWARD, -50)
+        backRightMotor.spin(FORWARD, -50)
+    elif controller_1.buttonLeft.pressing():
+        frontLeftMotor.spin(FORWARD, -50)
+        backLeftMotor.spin(FORWARD, 50)
+        
+        frontRightMotor.spin(FORWARD, 50 * 1) 
+        backRightMotor.spin(FORWARD, -50 * 1)
+
+
+     
+
+
+    
 
 # ---- START ACTUALLY EXECUTING CODE ---- 
 
