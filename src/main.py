@@ -18,7 +18,11 @@ import math
 # frontLeftMotor      motor29       A
 # frontRightMotor     motor29       B
 # backLeftMotor       motor29       D
-# backRightMotor      motor29       E
+# backRightMotor      motor29       C
+#
+# redFlywheelMotor    motor29       ?
+# blueFlywheelMotor   motor29       ?
+# intakeWheelMotor    motor29       ?
 # Bottom of Vexcode Configures Devices KEY---------
 
 
@@ -30,7 +34,11 @@ frontLeftMotor = Motor29(brain.three_wire_port.a, False)
 frontRightMotor = Motor29(brain.three_wire_port.b, True)
 backLeftMotor = Motor29(brain.three_wire_port.d, False)
 backRightMotor = Motor29(brain.three_wire_port.c, True)
-#flywheelMotor = Motor29(brain.three_wire_port.f, False)
+
+redFlywheelMotor = Motor29(brain.three_wire_port.f, False)
+blueFlywheelMotor = Motor29(brain.three_wire_port.g, True)
+intakeWheelMotor = Motor29(brain.three_wire_port.h, True)
+
 controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
 
@@ -123,26 +131,29 @@ def drive(power: float, turn: float, theta: float):
     # brain.screen.print("Turn ", turn)
 
 
-# Intake Mechanism----------------------------------------------------
-def intake(): 
-    # only want to intake if button "a" is being pressed 
-    if controller_1.buttonA.pressing():     
-        #flywheelMotor.spin(FORWARD, 50)
+# Shooting Mechanism----------------------------------------------------
+def shootingMechanism(): 
+    #Shooting
+    # only want to intake if button "R2" is being pressed  
+    if controller_2.buttonR2.pressing():     
+        redFlywheelMotor.spin(FORWARD, 100)  # should be spinning clockwise | speed could change through game
+        blueFlywheelMotor.spin(FORWARD, 90)  # should be spinning counterclockwise | blue speed should be constant 
+    
+    elif controller_2.buttonA.pressing(): 
         pass
     else:
-        #flywheelMotor.stop()
-        pass
+        redFlywheelMotor.stop()
+        blueFlywheelMotor.stop()
+        pass 
 
 
-# Conveyor Mechanism----------------------------------------------------
-def conveyor():
-    pass
 
-
-# Shooting Mechanism----------------------------------------------------
-def shoot():
-    pass
-    
+#conveyor intake Mechanism----------------------------------------------------
+def conveyorMechanism():
+    if controller_2.buttonA.pressing(): 
+        intakeWheelMotor.spin(FORWARD, 50)
+    else:
+        intakeWheelMotor.stop()
 
 
 # ---- START ACTUALLY EXECUTING CODE ---- 
