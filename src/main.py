@@ -22,7 +22,7 @@ import math
 # Triport:
 #     flywheelMotor1      motor29       D
 #     flywheelMotor2      motor29       F
-#     inakeMotor          motor29       A
+#     intakeMotor         motor29       A
 #     conveyorMotor       motor29       C
 # Bottom of Vexcode Configures Devices KEY---------
 
@@ -39,7 +39,7 @@ backRightMotor = Motor29(brain.three_wire_port.c, True)
 triport = Triport(Ports.PORT1)
 flywheelMotor1 = Motor29(triport.d, True)
 flywheelMotor2 = Motor29(triport.f, False)
-inakeMotor = Motor29(triport.a, False)
+intakeMotor = Motor29(triport.a, False)
 conveyorMotor = Motor29(triport.c, False)
 
 controller_1 = Controller(PRIMARY)
@@ -51,7 +51,6 @@ STRAFE_SPEED_MULTIPLIER = 1
 ROTATION_SPEED_MULTIPLIER = 0.5
 CRABCRAWLALIGN = 2
 
-offset = 1
 
 #================================================================= wait for stuff to configure =================================================================#
 wait(25, MSEC)
@@ -79,8 +78,13 @@ def main():
     theta = math.atan2(y, x) 
     power = math.sqrt(float(x**2) + float(y**2))
 
-    direction = reverse()
-    intake(direction)
+    # Reverse motor directions if the X button is held
+    if controller_1.buttonX.pressing():     
+        direction = REVERSE
+    else:
+        direction = FORWARD
+    
+    intake()
     conveyor(direction)
     shoot(direction)
 
@@ -105,8 +109,8 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
     cos = math.cos(theta - math.pi/4)
     maxValue = max(abs(sin), abs(cos))
     
-    leftFront = (power * cos/maxValue + turn) * offset
-    rightFront = (power * sin/maxValue - turn) * offset
+    leftFront = power * cos/maxValue + turn
+    rightFront = power * sin/maxValue - turn
     leftRear = power * sin/maxValue + turn
     rightRear = power * cos/maxValue - turn
 
@@ -128,12 +132,12 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 
     
     # drive left side
-    frontLeftMotor.spin(FORWARD, leftFront)
-    backLeftMotor.spin(FORWARD, leftRear)
+    frontLeftMotor.spin(FORWARD, leftFront, PERCENT)
+    backLeftMotor.spin(FORWARD, leftRear, PERCENT)
 
     # drive right side
-    frontRightMotor.spin(FORWARD, rightFront)
-    backRightMotor.spin(FORWARD, rightRear)
+    frontRightMotor.spin(FORWARD, rightFront, PERCENT)
+    backRightMotor.spin(FORWARD, rightRear, PERCENT)
 
 
     # Print motor vaules out for debugging
@@ -151,18 +155,20 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
     # brain.screen.print("Turn ", turn)
 
 
-#Shooting & Intake Mechanism----------------------------------------------------
-def intake(direction): 
-    if controller_1.buttonL1.pressing():     
-        inakeMotor.spin(direction, 30)
+# Intake Mechanism----------------------------------------------------
+def intake(): 
+    if controller_1.buttonL2.pressing():     
+        intakeMotor.spin(FORWARD, 50, PERCENT)
+    elif controller_1.buttonL1.pressing():
+        intakeMotor.spin(REVERSE, 50, PERCENT)
     else:
-        inakeMotor.stop()
+        intakeMotor.stop()
 
 
 # Conveyor Mechanism----------------------------------------------------
 def conveyor(direction):
     if controller_1.buttonR1.pressing():     
-        conveyorMotor.spin(direction, 60)
+        conveyorMotor.spin(direction, 60, PERCENT)
         # controller_1.screen.clear_screen()
         # controller_1.screen.set_cursor(1,1)
         # controller_1.screen.print("print test ", direction)
@@ -171,7 +177,6 @@ def conveyor(direction):
         # controller_1.screen.set_cursor(1,1)
         # controller_1.screen.print("not run ", direction)
         conveyorMotor.stop()
-
 
 
 # Shooting Mechanism----------------------------------------------------
@@ -185,22 +190,12 @@ def shoot(direction):
 
     if g_isFlywheelOn:
         # If the motor state is on, spin the motors
-        flywheelMotor1.spin(direction, 70)
-        flywheelMotor2.spin(direction, 70)
+        flywheelMotor1.spin(direction, 70, PERCENT)
+        flywheelMotor2.spin(direction, 70, PERCENT)
     else:
         # If the motor state is off, stop the motors
         flywheelMotor1.stop()
         flywheelMotor2.stop()
-
-
-#reverses all motors that are controlled by the object 'direction'
-#for intake and shooter
-def reverse():
-    if controller_1.buttonX.pressing():     
-        direction = REVERSE
-    else:
-        direction = FORWARD
-    return direction
     
     
 
