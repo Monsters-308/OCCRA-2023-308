@@ -198,6 +198,10 @@ def reverse():
 
 
     
+def directMovement():
+    if controller_1.buttonUp.pressing():     
+        frontLeftMotor.spin(FORWARD, 50)
+        backLeftMotor.spin(FORWARD, 50)
 
 # ---- START EXECUTING CODE ---- 
 while 1:
