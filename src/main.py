@@ -37,17 +37,10 @@ backLeftMotor = Motor29(brain.three_wire_port.d, False)
 backRightMotor = Motor29(brain.three_wire_port.c, True)
 
 triport = Triport(Ports.PORT1)
-<<<<<<< HEAD
 redFlywheelMotor = Motor29(triport.c, True)
 blueFlywheelMotor = Motor29(triport.d, False)
 intakeMotor = Motor29(triport.a, False)
 conveyorMotor = Motor29(triport.b, False)
-=======
-flywheelMotor1 = Motor29(triport.d, True)
-flywheelMotor2 = Motor29(triport.f, False)
-intakeMotor = Motor29(triport.a, False)
-conveyorMotor = Motor29(triport.c, False)
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
 
 controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
@@ -85,27 +78,10 @@ def main():
     # Convert cartesian values (x and y) into polar values (angle and magnitude)
     theta = math.atan2(y, x) 
     power = math.sqrt(float(x**2) + float(y**2))
-
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-    
     
     intake()
     conveyor()
     shoot()
-=======
->>>>>>> Stashed changes
-    # Reverse motor directions if the X button is held
-    if controller_1.buttonX.pressing():     
-        direction = REVERSE
-    else:
-        direction = FORWARD
-    
-    intake()
-    conveyor(direction)
-    shoot(direction)
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
 
     # move drive wheels
     if(controller_1.buttonLeft.pressing()):
@@ -121,8 +97,9 @@ def main():
 
 
 # Controls Robot drive-------------------------------------------------------------------------------------------
-# Forward & Turn control speed of chassiss wheels
-# Values Span -100 to 100. 
+# power: how fast the robot should move
+# theta: what direction the robot should move in (in radians). right is 0 deg, forwards is 90 deg, backwards is -90 deg, left is +-180 deg.
+# turn: how quickly the robot should rotate. positive is right
 def drive(power: float, turn: float, theta: float, strafeAxis: float):
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
@@ -139,6 +116,7 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
       #  leftFront = leftFront * CRABCRAWLALIGN
 
     # if one motor needs to move faster than the max, all of the motor speeds are reduced
+    # Allows for tighter turning at faster speeds
     if ((power + abs(turn)) > 100):
         leftFront /= power + abs(turn) 
         rightFront /= power + abs(turn) 
@@ -176,29 +154,15 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 
 # Intake Mechanism----------------------------------------------------
 def intake(): 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
     if controller_2.buttonL2.pressing():     
         intakeMotor.spin(FORWARD, 70, PERCENT)
     elif controller_2.buttonL1.pressing():
         intakeMotor.spin(REVERSE, 70, PERCENT)
-=======
->>>>>>> Stashed changes
-    if controller_1.buttonL2.pressing():     
-        intakeMotor.spin(FORWARD, 50, PERCENT)
-    elif controller_1.buttonL1.pressing():
-        intakeMotor.spin(REVERSE, 50, PERCENT)
-<<<<<<< Updated upstream
-=======
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
->>>>>>> Stashed changes
     else:
         intakeMotor.stop()
 
 
 # Conveyor Mechanism----------------------------------------------------
-<<<<<<< HEAD
 def conveyor():
     if controller_2.buttonR1.pressing() or controller_2.buttonL1.pressing():     
         conveyorMotor.spin(FORWARD, 60, PERCENT)
@@ -208,17 +172,6 @@ def conveyor():
     #oppsie button
     elif controller_2.buttonA.pressing():
         conveyorMotor.spin(REVERSE, 60, PERCENT)
-=======
-def conveyor(direction):
-    if controller_1.buttonR1.pressing():     
-        conveyorMotor.spin(direction, 60, PERCENT)
-        # controller_1.screen.clear_screen()
-        # controller_1.screen.set_cursor(1,1)
-        # controller_1.screen.print("print test ", direction)
-<<<<<<< Updated upstream
-=======
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
->>>>>>> Stashed changes
     else:
         # controller_1.screen.clear_screen()
         # controller_1.screen.set_cursor(1,1)
@@ -227,9 +180,6 @@ def conveyor(direction):
 
 
 # Shooting Mechanism----------------------------------------------------
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 def shoot():
     if controller_2.buttonR2.pressing():
         # If the motor state is on, spin the motors
@@ -243,28 +193,6 @@ def shoot():
         # If the motor state is off, stop the motors
         redFlywheelMotor.stop()
         blueFlywheelMotor.stop()
-=======
->>>>>>> Stashed changes
-g_isFlywheelOn = False
-def shoot(direction):
-    global g_isFlywheelOn
-
-    if controller_1.buttonR2.pressing():
-        # Toggle the state when the button is pressed
-        g_isFlywheelOn = not g_isFlywheelOn
-
-    if g_isFlywheelOn:
-        # If the motor state is on, spin the motors
-        flywheelMotor1.spin(direction, 70, PERCENT)
-        flywheelMotor2.spin(direction, 70, PERCENT)
-    else:
-        # If the motor state is off, stop the motors
-        flywheelMotor1.stop()
-        flywheelMotor2.stop()
-<<<<<<< Updated upstream
-=======
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
->>>>>>> Stashed changes
     
     
 
@@ -273,12 +201,4 @@ def shoot(direction):
 
 while 1:
     main()
-<<<<<<< Updated upstream
     wait(10, MSEC)
-=======
-<<<<<<< HEAD
-    wait(2, MSEC)
-=======
-    wait(10, MSEC)
->>>>>>> e63611871afd710c2235ce53f1dd9795b63e9a9f
->>>>>>> Stashed changes
