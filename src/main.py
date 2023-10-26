@@ -38,7 +38,7 @@ backRightMotor = Motor29(brain.three_wire_port.c, True)
 
 triport = Triport(Ports.PORT1)
 redFlywheelMotor = Motor29(triport.c, True)
-blueFlywheelMotor = Motor29(triport.d, False)
+blueFlywheelMotor = Motor29(triport.d, True)
 intakeMotor = Motor29(triport.a, False)
 conveyorMotor = Motor29(triport.b, False)
 
@@ -78,6 +78,8 @@ def main():
     # Convert cartesian values (x and y) into polar values (angle and magnitude)
     theta = math.atan2(y, x) 
     power = math.sqrt(float(x**2) + float(y**2))
+
+    
     
     intake()
     conveyor()
@@ -85,21 +87,20 @@ def main():
 
     # move drive wheels
     if(controller_1.buttonLeft.pressing()):
-        drive(50, 0, math.radians(180), x)
+        drive(70, 0, math.radians(180), x)
     elif(controller_1.buttonRight.pressing()):
-        drive(50, 0, 0, x)
+        drive(70, 0, 0, x)
     elif(controller_1.buttonDown.pressing()):
-        drive(50, 0, math.radians(-90), x)
+        drive(70, 0, math.radians(-90), x)
     elif(controller_1.buttonUp.pressing()):
-        drive(50, 0, math.radians(90), x)
+        drive(70, 0, math.radians(90), x)
     else:
         drive(power, turn, theta, x)
 
 
 # Controls Robot drive-------------------------------------------------------------------------------------------
-# power: how fast the robot should move
-# theta: what direction the robot should move in (in radians). right is 0 deg, forwards is 90 deg, backwards is -90 deg, left is +-180 deg.
-# turn: how quickly the robot should rotate. positive is right
+# Forward & Turn control speed of chassiss wheels
+# Values Span -100 to 100. 
 def drive(power: float, turn: float, theta: float, strafeAxis: float):
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
@@ -116,7 +117,6 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
       #  leftFront = leftFront * CRABCRAWLALIGN
 
     # if one motor needs to move faster than the max, all of the motor speeds are reduced
-    # Allows for tighter turning at faster speeds
     if ((power + abs(turn)) > 100):
         leftFront /= power + abs(turn) 
         rightFront /= power + abs(turn) 
@@ -155,7 +155,7 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 # Intake Mechanism----------------------------------------------------
 def intake(): 
     if controller_2.buttonL2.pressing():     
-        intakeMotor.spin(FORWARD, 70, PERCENT)
+        intakeMotor.spin(FORWARD, 80, PERCENT)
     elif controller_2.buttonL1.pressing():
         intakeMotor.spin(REVERSE, 70, PERCENT)
     else:
@@ -183,12 +183,16 @@ def conveyor():
 def shoot():
     if controller_2.buttonR2.pressing():
         # If the motor state is on, spin the motors
-        redFlywheelMotor.spin(FORWARD, 70, PERCENT)
+        redFlywheelMotor.spin(FORWARD, 65, PERCENT)
+        blueFlywheelMotor.spin(FORWARD, 60, PERCENT)
+    elif controller_2.buttonUp.pressing():
+        # If the motor state is on, spin the motors
+        redFlywheelMotor.spin(FORWARD, 75, PERCENT)
         blueFlywheelMotor.spin(FORWARD, 65, PERCENT)
     elif controller_2.buttonX.pressing():
         # If the motor state is on, spin the motors
-        redFlywheelMotor.spin(REVERSE, 90, PERCENT)
-        blueFlywheelMotor.spin(REVERSE, 90, PERCENT)
+        redFlywheelMotor.spin(REVERSE, 75, PERCENT)
+        blueFlywheelMotor.spin(REVERSE, 75, PERCENT)
     else:
         # If the motor state is off, stop the motors
         redFlywheelMotor.stop()
@@ -201,4 +205,4 @@ def shoot():
 
 while 1:
     main()
-    wait(10, MSEC)
+    wait(7, MSEC)
