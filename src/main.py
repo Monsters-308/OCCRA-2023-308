@@ -20,10 +20,10 @@ import math
 # backLeftMotor       motor29       D
 # backRightMotor      motor29       C
 # Triport:
-#     flywheelMotor1      motor29       D
-#     flywheelMotor2      motor29       F
+#     redFlywheelMotor    motor29       C
+#     blueFlywheelMotor   motor29       D
 #     intakeMotor         motor29       A
-#     conveyorMotor       motor29       C
+#     conveyorMotor       motor29       B
 # Bottom of Vexcode Configures Devices KEY---------
 
 
@@ -113,8 +113,8 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 
     # DEBUG: realign strafing 
     #if strafeAxis > 0 or strafeAxis < 0:
-     #   rightFront = rightFront * CRABCRAWLALIGN
-      #  leftFront = leftFront * CRABCRAWLALIGN
+    #    rightFront = rightFront * CRABCRAWLALIGN
+    #    leftFront = leftFront * CRABCRAWLALIGN
 
     # if one motor needs to move faster than the max, all of the motor speeds are reduced
     if ((power + abs(turn)) > 100):
@@ -166,16 +166,10 @@ def intake():
 def conveyor():
     if controller_2.buttonR1.pressing() or controller_2.buttonL1.pressing():     
         conveyorMotor.spin(FORWARD, 60, PERCENT)
-        # controller_1.screen.clear_screen()
-        # controller_1.screen.set_cursor(1,1)
-        # controller_1.screen.print("print test ", direction)
     #oppsie button
     elif controller_2.buttonA.pressing():
         conveyorMotor.spin(REVERSE, 60, PERCENT)
     else:
-        # controller_1.screen.clear_screen()
-        # controller_1.screen.set_cursor(1,1)
-        # controller_1.screen.print("not run ", direction)
         conveyorMotor.stop()
 
 
