@@ -41,6 +41,9 @@ redFlywheelMotor = Motor29(triport.c, True)
 blueFlywheelMotor = Motor29(triport.d, True)
 intakeMotor = Motor29(triport.a, False)
 conveyorMotor = Motor29(triport.b, False)
+#LEDs
+ledCom1 = DigitalOut(triport.e)
+ledCom2 = DigitalOut(triport.g)
 
 controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
@@ -84,6 +87,7 @@ def main():
     intake()
     conveyor()
     shoot()
+    ledState()
 
     # move drive wheels
     if(controller_1.buttonLeft.pressing()):
@@ -154,44 +158,60 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 
 # Intake Mechanism----------------------------------------------------
 def intake(): 
-    if controller_2.buttonL2.pressing():     
-        intakeMotor.spin(FORWARD, 80, PERCENT)
+    if controller_1.buttonL2.pressing():     
+        intakeMotor.spin(FORWARD, 90, PERCENT)
+    elif controller_1.buttonL1.pressing():
+        intakeMotor.spin(REVERSE, 80, PERCENT)
+    elif controller_2.buttonL2.pressing():     
+        intakeMotor.spin(FORWARD, 90, PERCENT)
     elif controller_2.buttonL1.pressing():
-        intakeMotor.spin(REVERSE, 70, PERCENT)
+        intakeMotor.spin(REVERSE, 80, PERCENT)
     else:
         intakeMotor.stop()
 
 
 # Conveyor Mechanism----------------------------------------------------
 def conveyor():
-    if controller_2.buttonR1.pressing() or controller_2.buttonL1.pressing():     
-        conveyorMotor.spin(FORWARD, 60, PERCENT)
-    #oppsie button
+    #conveyor up
+    if controller_2.buttonR1.pressing() or controller_2.buttonL1.pressing() or controller_1.buttonL1.pressing():     
+        conveyorMotor.spin(FORWARD, 70, PERCENT)
+    #oppsie button (conveyor down)
     elif controller_2.buttonA.pressing():
-        conveyorMotor.spin(REVERSE, 60, PERCENT)
+        conveyorMotor.spin(REVERSE, 70, PERCENT)
     else:
         conveyorMotor.stop()
 
 
 # Shooting Mechanism----------------------------------------------------
 def shoot():
+    #regular shoot
     if controller_2.buttonR2.pressing():
-        # If the motor state is on, spin the motors
-        redFlywheelMotor.spin(FORWARD, 65, PERCENT)
-        blueFlywheelMotor.spin(FORWARD, 60, PERCENT)
+        redFlywheelMotor.spin(FORWARD, 70, PERCENT) #80
+        blueFlywheelMotor.spin(FORWARD, 55, PERCENT) #70
+        controller_1.rumble(".")
+    #Turbo shoot
     elif controller_2.buttonUp.pressing():
-        # If the motor state is on, spin the motors
         redFlywheelMotor.spin(FORWARD, 75, PERCENT)
-        blueFlywheelMotor.spin(FORWARD, 65, PERCENT)
+        blueFlywheelMotor.spin(FORWARD, 60, PERCENT)
+    #Upper intake 
     elif controller_2.buttonX.pressing():
-        # If the motor state is on, spin the motors
-        redFlywheelMotor.spin(REVERSE, 75, PERCENT)
-        blueFlywheelMotor.spin(REVERSE, 75, PERCENT)
+        redFlywheelMotor.spin(REVERSE, 90, PERCENT)
+        blueFlywheelMotor.spin(REVERSE, 90, PERCENT)
     else:
-        # If the motor state is off, stop the motors
         redFlywheelMotor.stop()
         blueFlywheelMotor.stop()
-    
+        
+def ledState():
+    if controller_2.buttonL2.pressing(): #up
+        ledCom1.set(0)
+        ledCom2.set(1)
+    elif controller_2.buttonL1.pressing(): #down
+        ledCom1.set(1)
+        ledCom2.set(1)
+    else:
+        ledCom1.set(1)
+        ledCom2.set(0)
+
     
 
 # ---- START EXECUTING CODE ---- 
@@ -199,4 +219,4 @@ def shoot():
 
 while 1:
     main()
-    wait(7, MSEC)
+    wait(1, MSEC)
