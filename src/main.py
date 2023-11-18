@@ -49,6 +49,8 @@ controller_1 = Controller(PRIMARY)
 controller_2 = Controller(PARTNER)
 #controller_2 = controller_1
 
+lightSensor = DigitalIn(brain.three_wire_port.e)
+
 # Constants
 FORWARD_SPEED_MULTIPLIER = 1
 STRAFE_SPEED_MULTIPLIER = 1
@@ -110,10 +112,10 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
     cos = math.cos(theta - math.pi/4)
     maxValue = max(abs(sin), abs(cos))
     
-    leftFront = power * cos/maxValue + turn
-    rightFront = power * sin/maxValue - turn
-    leftRear = power * sin/maxValue + turn
-    rightRear = power * cos/maxValue - turn
+    leftFront = power * cos / maxValue + turn
+    rightFront = power * sin / maxValue - turn
+    leftRear = power * sin / maxValue + turn
+    rightRear = power * cos / maxValue - turn
 
     # DEBUG: realign strafing 
     #if strafeAxis > 0 or strafeAxis < 0:
@@ -158,10 +160,12 @@ def drive(power: float, turn: float, theta: float, strafeAxis: float):
 
 # Intake Mechanism----------------------------------------------------
 def intake(): 
+    # Driver
     if controller_1.buttonL2.pressing():     
         intakeMotor.spin(FORWARD, 90, PERCENT)
     elif controller_1.buttonL1.pressing():
         intakeMotor.spin(REVERSE, 80, PERCENT)
+    #Co-Driver
     elif controller_2.buttonL2.pressing():     
         intakeMotor.spin(FORWARD, 90, PERCENT)
     elif controller_2.buttonL1.pressing():
@@ -186,26 +190,28 @@ def conveyor():
 def shoot():
     #regular shoot
     if controller_2.buttonR2.pressing():
-        redFlywheelMotor.spin(FORWARD, 70, PERCENT) #80
-        blueFlywheelMotor.spin(FORWARD, 55, PERCENT) #70
+        redFlywheelMotor.spin(FORWARD, 70, PERCENT) #70
+        blueFlywheelMotor.spin(FORWARD, 50, PERCENT) #50
         controller_1.rumble(".")
     #Turbo shoot
     elif controller_2.buttonUp.pressing():
-        redFlywheelMotor.spin(FORWARD, 75, PERCENT)
-        blueFlywheelMotor.spin(FORWARD, 60, PERCENT)
+        redFlywheelMotor.spin(FORWARD, 75, PERCENT) #75
+        blueFlywheelMotor.spin(FORWARD, 55, PERCENT) #55
     #Upper intake 
     elif controller_2.buttonX.pressing():
-        redFlywheelMotor.spin(REVERSE, 90, PERCENT)
-        blueFlywheelMotor.spin(REVERSE, 90, PERCENT)
+        redFlywheelMotor.spin(REVERSE, 40, PERCENT)
+        blueFlywheelMotor.spin(REVERSE, 100, PERCENT)
     else:
         redFlywheelMotor.stop()
         blueFlywheelMotor.stop()
-        
+
+
+# LEDS!!!!!! ----------------------------------------------------
 def ledState():
-    if controller_2.buttonL2.pressing(): #up
+    if controller_2.buttonR2.pressing() or controller_2.buttonUp.pressing(): #shoot
         ledCom1.set(0)
         ledCom2.set(1)
-    elif controller_2.buttonL1.pressing(): #down
+    elif not lightSensor.value(): #ballin
         ledCom1.set(1)
         ledCom2.set(1)
     else:

@@ -5,7 +5,7 @@
 #define LED_PIN 9
 #define COM_PIN1 12
 #define COM_PIN2 8
-#define BRIGHTNESS 20
+#define BRIGHTNESS 40
 
 //Used to initialize
 Adafruit_NeoPixel leds = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -36,10 +36,10 @@ void loop() {
       robotOn();
       break;
     case 2:
-      clawUp();
+      shoot();
       break;
     case 3:
-      clawDown();
+      ballin();
       break;
     default:
       robotOff();
@@ -59,21 +59,23 @@ void robotOff(){
 int cycleState = 0;
 void robotOn(){
   for (int i=0; i < LED_COUNT; i++){
-    leds.setPixelColor(i, leds.ColorHSV(static_cast<unsigned long>(i)*800 + cycleState));
+    leds.setPixelColor(i, leds.ColorHSV(static_cast<unsigned long>(i)*1000 + cycleState));
   }
-  cycleState += 800;
+  cycleState += 1000;
 }
 
+int pulseState = 0;
 //State for when the claw is being raised
-void clawUp(){
+void shoot(){
   for (int i=0; i < LED_COUNT; i++){
-    leds.setPixelColor(i, leds.Color(0, 0, 200));
+    leds.setPixelColor(i, leds.ColorHSV(15000, 255, 110 + 90*sin((i+pulseState)*0.2)));
   }
+  pulseState++;
 }
 
 //State for when the claw is being lowered
-void clawDown(){
+void ballin(){
   for (int i=0; i < LED_COUNT; i++){
-    leds.setPixelColor(i, leds.Color(200, 200, 0));
+    leds.setPixelColor(i, leds.Color(0, 200, 0));
   }
 }
