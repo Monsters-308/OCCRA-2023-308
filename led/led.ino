@@ -68,9 +68,9 @@ int pulseState = 0;
 //State for when the claw is being raised
 void shoot(){
   for (int i=0; i < LED_COUNT; i++){
-    leds.setPixelColor(i, leds.ColorHSV(15000, 255, 110 + 90*sin((i+pulseState)*0.2)));
+    leds.setPixelColor(i, leds.ColorHSV(15000, 255, 110 + 90*sin((i+pulseState)*0.5)));
   }
-  pulseState++;
+  pulseState+=2;
 }
 
 //State for when the claw is being lowered
